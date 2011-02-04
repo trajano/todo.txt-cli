@@ -121,7 +121,7 @@ help()
 		      Marks task(s) on line ITEM# as done in todo.txt.
 
                     edit ITEM#
-                      Loads up the item into $EDITOR
+                      Loads up the item into $TODO_EDITOR
 
 		    help
 		      Display this help message.
@@ -913,9 +913,17 @@ case $action in
     item=$1
     [ -z "$item" ] && die "$errmsg"
     [[ "$item" = +([0-9]) ]] || die "$errmsg"
-    todo=$(sed "$item!d" "$TODO_FILE")
-    [ -z "$todo" ] && die "TODO: No task $item."
-    echo $todo
+    input=$(sed "$item!d" "$TODO_FILE")
+    cleaninput $input
+    [ -z "$input" ] && die "TODO: No task $item."
+    echo "$input" > "$TMP_FILE"
+    "$TODO_EDITOR" "$TMP_FILE"
+    if [ $? -eq 0 ]
+    then
+        input=`cat $TMP_FILE`
+        cleaninput $input
+        replaceOrPrepend 'replace' "$item" "$input"
+    fi
     ;;
 
 "help" )
