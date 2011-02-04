@@ -1022,15 +1022,19 @@ case $action in
     ;;
 
 "listcon" | "lsc" )
-    grep -o '[^ ]*@[^ ]\+' "$TODO_FILE" | grep '^@' | sort -u
+    #cat "$TODO_FILE" | tr '\n\r' '  ' | grep -o '[^ ]*@[^ ]\+' | grep '^@' | sort -u
+    categories=`cat "$TODO_FILE" | tr '\n\r' '  ' | grep -o '[^ ]*@[^ ]\+' | grep '^@' | sort -u`
+    describecategories $categories
     ;;
 
 "listproj" | "lsprj" )
-    grep -o '[^ ]*+[^ ]\+' "$TODO_FILE" | grep '^+' | sort -u
+    categories=`cat "$TODO_FILE" | tr '\n\r' '  ' | grep -o '[^ ]*+[^ ]\+' | grep '^+' | sort -u`
+    describecategories $categories
     ;;
 
 "listtags" | "lst" )
-    describecategories `grep -o '[^ ]*\^[^ ]\+' "$TODO_FILE" | grep '^\^' | sort -u` 
+    categories=`cat "$TODO_FILE" | tr '\n\r' '  ' | grep -o '[^ ]*^[^ ]\+' | grep '^^' | sort -u`
+    describecategories $categories
     ;;
 
 "listpri" | "lsp" )
