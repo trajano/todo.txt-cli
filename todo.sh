@@ -284,6 +284,12 @@ cleaninput()
     fi
 }
 
+escapekey() {
+    # escapes the contents of $key this will ensure that the key does not contain
+    # any characters that may be used as part of a regexp search
+    key=`echo "$key" | sed 's/\\([^[:alnum:]]\\)/\\\\\\1/g'`
+}
+
 archive()
 {
     #defragment blank lines
@@ -936,13 +942,14 @@ case $action in
 
     # escape potential bad regexp characters
     # TODO convert the escape into a function
-    escape_category=`echo $category | sed 's/\^/\\\^/g' | sed 's/\@/\\\@/g' | sed 's/\+/\\\+/g'`
-    if grep -q "^$escape_category" "$DESC_FILE"
+    key="$category"
+    escapekey $key
+    if grep -q "^$key " "$DESC_FILE"
     then
       # Found an existing category value, so just 
       # remove it because we are replacing it with
       # a new one
-      grep -v "^$escape_category" "$DESC_FILE" > "$TMP_FILE"
+      grep -v "^$key" "$DESC_FILE" > "$TMP_FILE"
       cat $TMP_FILE > $DESC_FILE
     fi 
     _addto "$DESC_FILE" "$input"
@@ -1011,7 +1018,14 @@ case $action in
 "listtags" | "lst" )
     for tag in `grep -o '[^ ]*\^[^ ]\+' "$TODO_FILE" | grep '^\^' | sort -u`
     do
-      echo $tag
+      key="$tag"
+      escapekey $key
+      if grep "^$key " $DESC_FILE
+      then
+          true
+      else
+          echo $tag
+      fi 
       # find in $DESC_FILE the matching tag value from the above
     done
     ;;
