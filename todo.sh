@@ -1009,7 +1009,11 @@ case $action in
     ;;
 
 "listtags" | "lst" )
-    grep -o '[^ ]*\^[^ ]\+' "$TODO_FILE" | grep '^\^' | sort -u
+    for tag in `grep -o '[^ ]*\^[^ ]\+' "$TODO_FILE" | grep '^\^' | sort -u`
+    do
+      echo $tag
+      # find in $DESC_FILE the matching tag value from the above
+    done
     ;;
 
 "listpri" | "lsp" )
