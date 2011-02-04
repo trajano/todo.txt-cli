@@ -910,7 +910,12 @@ case $action in
     # shift so we get arguments to the do request
     shift;
     [ "$#" -eq 0 ] && die "$errmsg"
-
+    item=$1
+    [ -z "$item" ] && die "$errmsg"
+    [[ "$item" = +([0-9]) ]] || die "$errmsg"
+    todo=$(sed "$item!d" "$TODO_FILE")
+    [ -z "$todo" ] && die "TODO: No task $item."
+    echo $todo
     ;;
 
 "help" )
