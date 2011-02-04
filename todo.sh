@@ -1020,9 +1020,9 @@ case $action in
     do
       key="$tag"
       escapekey $key
-      if grep "^$key " $DESC_FILE
+      if grep -q "^$key " $DESC_FILE 
       then
-          true
+          grep "^$key " $DESC_FILE | sed 's/[[:space:]]/	/'
       else
           echo $tag
       fi 
