@@ -293,6 +293,7 @@ escapekey() {
 describecategories() {
     for tag in $*
     do
+      tag=`echo $tag | tr 'A-Z' 'a-z'`
       key="$tag"
       escapekey $key
       if grep -q "^$key " $DESC_FILE 
@@ -947,7 +948,7 @@ case $action in
     errmsg="usage: $TODO_SH describe [^TAG|+PROJECT|@CONTEXT] \"DESCRIPTION\""
 
     shift
-    category=$1
+    category=`echo "$1" | tr 'A-Z' 'a-z'`
 
     # TODO error if the first character of $catgory is not ^+@
 
