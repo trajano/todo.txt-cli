@@ -297,7 +297,7 @@ describecategories() {
       escapekey $key
       if grep -q "^$key " $DESC_FILE 
       then
-          grep "^$key " $DESC_FILE | sed 's/[[:space:]]/	/'
+          grep "^$key " $DESC_FILE | sed 's/[[:space:]]/'"$(printf '\011')"'/'
       else
           echo $tag
       fi 
