@@ -53,6 +53,7 @@ shorthelp()
 		    del|rm ITEM# [TERM]
 		    dp|depri ITEM#[, ITEM#, ITEM#, ...]
 		    do ITEM#[, ITEM#, ITEM#, ...]
+                    edit ITEM#
 		    help
 		    list|ls [TERM...]
 		    listall|lsa [TERM...]
@@ -118,6 +119,9 @@ help()
 
 		    do ITEM#[, ITEM#, ITEM#, ...]
 		      Marks task(s) on line ITEM# as done in todo.txt.
+
+                    edit ITEM#
+                      Loads up the item into $EDITOR
 
 		    help
 		      Display this help message.
@@ -855,6 +859,9 @@ case $action in
 		NEWTODO=$(sed "$item!d" "$TODO_FILE")
 		echo "$item $NEWTODO"
 		echo "TODO: $item deprioritized."
+    # shift so we get arguments to the do request
+    shift;
+    [ "$#" -eq 0 ] && die "$errmsg"
 	    fi
 	else
 	    die "$errmsg"
@@ -896,6 +903,14 @@ case $action in
     if [ $TODOTXT_AUTO_ARCHIVE = 1 ]; then
         archive
     fi
+    ;;
+
+"edit" )
+    errmsg="usage: $TODO_SH edit ITEM#"
+    # shift so we get arguments to the do request
+    shift;
+    [ "$#" -eq 0 ] && die "$errmsg"
+
     ;;
 
 "help" )
