@@ -290,6 +290,20 @@ escapekey() {
     key=`echo "$key" | sed 's/\\([^[:alnum:]]\\)/\\\\\\1/g'`
 }
 
+describecategories() {
+    for tag in $*
+    do
+      key="$tag"
+      escapekey $key
+      if grep -q "^$key " $DESC_FILE 
+      then
+          grep "^$key " $DESC_FILE | sed 's/[[:space:]]/	/'
+      else
+          echo $tag
+      fi 
+    done
+}
+
 archive()
 {
     #defragment blank lines
@@ -1016,18 +1030,7 @@ case $action in
     ;;
 
 "listtags" | "lst" )
-    for tag in `grep -o '[^ ]*\^[^ ]\+' "$TODO_FILE" | grep '^\^' | sort -u`
-    do
-      key="$tag"
-      escapekey $key
-      if grep -q "^$key " $DESC_FILE 
-      then
-          grep "^$key " $DESC_FILE | sed 's/[[:space:]]/	/'
-      else
-          echo $tag
-      fi 
-      # find in $DESC_FILE the matching tag value from the above
-    done
+    describecategories `grep -o '[^ ]*\^[^ ]\+' "$TODO_FILE" | grep '^\^' | sort -u` 
     ;;
 
 "listpri" | "lsp" )
