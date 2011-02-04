@@ -291,6 +291,7 @@ archive()
 
 replaceOrPrepend()
 {
+  # replaceOrPrepend(action, item, text)
   action=$1; shift
   case "$action" in
     replace)
