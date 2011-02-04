@@ -24,3 +24,9 @@ h2. Quick Links
 * "Add-on Directory":http://wiki.github.com/ginatrapani/todo.txt-cli/todosh-add-on-directory
 * "Changelog":http://wiki.github.com/ginatrapani/todo.txt-cli/todosh-changelog
 * "Known Bugs":http://github.com/ginatrapani/todo.txt-cli/issues
+
+h1. Changes from original
+
+* Added ^tag support.  This character is used instead of "#" because "#" gets treated as the beginning of a comment.
+* Tags, Contexts and Projects are forced to be lowercase.  This makes it easier for lookups.
+* Added edit command which opens up a specific task into the EDITOR to allow the user to make changes to a task

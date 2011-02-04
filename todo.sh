@@ -53,6 +53,7 @@ shorthelp()
 		    del|rm ITEM# [TERM]
 		    dp|depri ITEM#[, ITEM#, ITEM#, ...]
 		    do ITEM#[, ITEM#, ITEM#, ...]
+                    edit ITEM#
 		    help
 		    list|ls [TERM...]
 		    listall|lsa [TERM...]
@@ -119,6 +120,9 @@ help()
 
 		    do ITEM#[, ITEM#, ITEM#, ...]
 		      Marks task(s) on line ITEM# as done in todo.txt.
+
+                    edit ITEM#
+                      Loads up the item into $TODO_EDITOR
 
 		    help
 		      Display this help message.
@@ -292,6 +296,7 @@ archive()
 
 replaceOrPrepend()
 {
+  # replaceOrPrepend(action, todotxt.cmd, item, text)
   action=$1; shift
   case "$action" in
     replace)
@@ -528,6 +533,7 @@ ACTION=${1:-$TODOTXT_DEFAULT_ACTION}
 [ -d "$TODO_DIR" ]  || die "Fatal Error: $TODO_DIR is not a directory"
 ( cd "$TODO_DIR" )  || die "Fatal Error: Unable to cd to $TODO_DIR"
 
+[ -x "$TODO_EDITOR" ] || die "Fatal Error: $TODO_EDITOR is not executable"
 [ -w "$TMP_FILE"  ] || echo -n > "$TMP_FILE" || die "Fatal Error: Unable to write to $TMP_FILE"
 [ -f "$TODO_FILE" ] || cp /dev/null "$TODO_FILE"
 [ -f "$DONE_FILE" ] || cp /dev/null "$DONE_FILE"
@@ -860,6 +866,9 @@ case $action in
 		NEWTODO=$(sed "$item!d" "$TODO_FILE")
 		echo "$item $NEWTODO"
 		echo "TODO: $item deprioritized."
+    # shift so we get arguments to the do request
+    shift;
+    [ "$#" -eq 0 ] && die "$errmsg"
 	    fi
 	else
 	    die "$errmsg"
@@ -900,6 +909,28 @@ case $action in
 
     if [ $TODOTXT_AUTO_ARCHIVE = 1 ]; then
         archive
+    fi
+    ;;
+
+"edit" )
+    errmsg="usage: $TODO_SH edit ITEM#"
+    # shift so we get arguments to the do request
+    cmd=$1
+    shift;
+    [ "$#" -eq 0 ] && die "$errmsg"
+    item=$1
+    [ -z "$item" ] && die "$errmsg"
+    [[ "$item" = +([0-9]) ]] || die "$errmsg"
+    input=$(sed "$item!d" "$TODO_FILE")
+    cleaninput $input
+    [ -z "$input" ] && die "TODO: No task $item."
+    echo "$input" > "$TMP_FILE"
+    "$TODO_EDITOR" "$TMP_FILE"
+    if [ $? -eq 0 ]
+    then
+        input=`cat $TMP_FILE`
+        cleaninput $input
+        replaceOrPrepend 'replace' "$cmd" "$item" "$input"
     fi
     ;;
 
