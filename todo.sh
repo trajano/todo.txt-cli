@@ -50,6 +50,7 @@ shorthelp()
 		    append|app ITEM# "TEXT TO APPEND"
 		    archive
 		    command [ACTIONS]
+		    describe [^TAG|+PROJECT|@CONTEXT]
 		    del|rm ITEM# [TERM]
 		    dp|depri ITEM#[, ITEM#, ITEM#, ...]
 		    do ITEM#[, ITEM#, ITEM#, ...]
@@ -117,6 +118,9 @@ help()
 		    dp ITEM#[, ITEM#, ITEM#, ...]
 		      Deprioritizes (removes the priority) from the task(s)
 		      on line ITEM# in todo.txt.
+
+		    describe [^TAG | +PROJECT | @CONTEXT] DESCRIPTION
+		      Creates a description for a tag, project or context. 
 
 		    do ITEM#[, ITEM#, ITEM#, ...]
 		      Marks task(s) on line ITEM# as done in todo.txt.
@@ -533,6 +537,7 @@ ACTION=${1:-$TODOTXT_DEFAULT_ACTION}
 [ -d "$TODO_DIR" ]  || die "Fatal Error: $TODO_DIR is not a directory"
 ( cd "$TODO_DIR" )  || die "Fatal Error: Unable to cd to $TODO_DIR"
 
+[ -f "$DESC_FILE" ] || cp /dev/null "$DESC_FILE"
 [ -x "$TODO_EDITOR" ] || die "Fatal Error: $TODO_EDITOR is not executable"
 [ -w "$TMP_FILE"  ] || echo -n > "$TMP_FILE" || die "Fatal Error: Unable to write to $TMP_FILE"
 [ -f "$TODO_FILE" ] || cp /dev/null "$TODO_FILE"
@@ -910,6 +915,33 @@ case $action in
     if [ $TODOTXT_AUTO_ARCHIVE = 1 ]; then
         archive
     fi
+    ;;
+
+"describe" )
+    # Finds the first parameter in $TODO_DESC using
+    # the pattern where you search from the beginning
+    # If it finds it, remove the value
+    # Add the new value to the file
+    # Sort the file and save it again
+    # TODO add error handling 
+    errmsg="usage: $TODO_SH describe [^TAG|+PROJECT|@CONTEXT] \"DESCRIPTION\""
+
+    shift
+    shift
+    category=$1
+
+    # TODO error if the first character of $catgory is not ^+@
+
+    shift
+    input=$category $*
+
+    # escape potential bad regexp characters
+    # TODO convert the escape into a function
+    escape_category = `echo $category | sed 's/\^/\\\^/g | sed 's/\@/\\\@/g | sed 's/\+/\\\+/g`
+    if grep -q "^$category" "$DESC_FILE"
+    
+
+    _addto "$DESC_FILE" "$input"
     ;;
 
 "edit" )
