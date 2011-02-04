@@ -1022,7 +1022,6 @@ case $action in
     ;;
 
 "listcon" | "lsc" )
-    #cat "$TODO_FILE" | tr '\n\r' '  ' | grep -o '[^ ]*@[^ ]\+' | grep '^@' | sort -u
     categories=`cat "$TODO_FILE" | tr '\n\r' '  ' | grep -o '[^ ]*@[^ ]\+' | grep '^@' | sort -u`
     describecategories $categories
     ;;
