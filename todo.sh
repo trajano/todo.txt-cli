@@ -291,7 +291,7 @@ archive()
 
 replaceOrPrepend()
 {
-  # replaceOrPrepend(action, item, text)
+  # replaceOrPrepend(action, todotxt.cmd, item, text)
   action=$1; shift
   case "$action" in
     replace)
@@ -909,6 +909,7 @@ case $action in
 "edit" )
     errmsg="usage: $TODO_SH edit ITEM#"
     # shift so we get arguments to the do request
+    cmd=$1
     shift;
     [ "$#" -eq 0 ] && die "$errmsg"
     item=$1
@@ -923,7 +924,7 @@ case $action in
     then
         input=`cat $TMP_FILE`
         cleaninput $input
-        replaceOrPrepend 'replace' "$item" "$input"
+        replaceOrPrepend 'replace' "$cmd" "$item" "$input"
     fi
     ;;
 
