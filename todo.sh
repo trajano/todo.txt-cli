@@ -982,8 +982,7 @@ case $action in
     cleaninput $input
     [ -z "$input" ] && die "TODO: No task $item."
     echo "$input" > "$TMP_FILE"
-    "$TODO_EDITOR" "$TMP_FILE"
-    if [ $? -eq 0 ]
+    if "$TODO_EDITOR" "$TMP_FILE"
     then
         input=`cat $TMP_FILE`
         cleaninput $input
