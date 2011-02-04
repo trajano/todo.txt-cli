@@ -927,20 +927,24 @@ case $action in
     errmsg="usage: $TODO_SH describe [^TAG|+PROJECT|@CONTEXT] \"DESCRIPTION\""
 
     shift
-    shift
     category=$1
 
     # TODO error if the first character of $catgory is not ^+@
 
     shift
-    input=$category $*
+    input="$category $*"
 
     # escape potential bad regexp characters
     # TODO convert the escape into a function
-    escape_category = `echo $category | sed 's/\^/\\\^/g | sed 's/\@/\\\@/g | sed 's/\+/\\\+/g`
-    if grep -q "^$category" "$DESC_FILE"
-    
-
+    escape_category=`echo $category | sed 's/\^/\\\^/g' | sed 's/\@/\\\@/g' | sed 's/\+/\\\+/g'`
+    if grep -q "^$escape_category" "$DESC_FILE"
+    then
+      # Found an existing category value, so just 
+      # remove it because we are replacing it with
+      # a new one
+      grep -v "^$escape_category" "$DESC_FILE" > "$TMP_FILE"
+      cat $TMP_FILE > $DESC_FILE
+    fi 
     _addto "$DESC_FILE" "$input"
     ;;
 
