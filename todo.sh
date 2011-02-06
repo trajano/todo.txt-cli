@@ -68,6 +68,8 @@ shorthelp()
 		    pri|p ITEM# PRIORITY
 		    replace ITEM# "UPDATED TODO"
 		    report
+		    tag ITEM# TAG,...
+		    untag ITEM# TAG,...
 
 		  See "help" for more details.
 	EndHelp
@@ -189,6 +191,12 @@ help()
 		    report
 		      Adds the number of open tasks and done tasks to report.txt.
 
+		    tag ITEM# TAG,...
+		      Adds the specified tags to an item.
+
+		    untag ITEM# TAG,...
+		      Removes the specified tags to an item.
+
 
 
 		  Options:
@@ -303,6 +311,12 @@ describecategories() {
          echo $tag
       fi
    done
+}
+
+escapekey() {
+   # escapes the contents of $key this will ensure that the key does not contain
+   # any characters that may be used as part of a regexp search
+   key=`echo "$key" | sed 's/\\([^[:alnum:]]\\)/\\\\\\1/g'`
 }
 
 archive()
@@ -1150,6 +1164,77 @@ case $action in
       echo $TECHO >> "$REPORT_FILE"
       [ $TODOTXT_VERBOSE -gt 0 ] && echo "TODO: Report file updated."
       cat "$REPORT_FILE"
+   ;;
+   
+   "tag" )
+      errmsg="usage: $TODO_SH tag ITEM# TAG,..."
+      shift
+      item=$1
+      [ -z "$item" ] && die "$errmsg"
+      [[ "$item" = +([0-9]) ]] || die "$errmsg"
+      input=$(sed "$item!d" "$TODO_FILE")
+      cleaninput $input
+      [ -z "$input" ] && die "TODO: No task $item."
+      
+      shift
+      
+      existing_tags=`echo $input | tr " " "\n" | sort -u | grep '^\^'`
+      
+      # split the tags and make sure they all have the ^ prefix if it was not there.
+      taglist=""
+      for tag in $*
+      do
+         tag=`echo $tag | sed 's/^\([^\^]\)/\^\1/'`
+         key=$tag
+         escapekey
+         if echo $existing_tags | grep -q "$key"
+         then
+            true
+         else
+            taglist="$taglist $tag"
+         fi
+      done
+      taglist=`echo $taglist | tr " " "\n" | sort -u`
+      # currently tag list is now a sorted list of tags that were taken from
+      # the command line
+      replaceOrPrepend 'replace' $TODO_SH $item "$input $taglist"
+   ;;
+   
+   "untag" )
+      errmsg="usage: $TODO_SH tag ITEM# TAG,..."
+      shift
+      item=$1
+      [ -z "$item" ] && die "$errmsg"
+      [[ "$item" = +([0-9]) ]] || die "$errmsg"
+      input=$(sed "$item!d" "$TODO_FILE")
+      cleaninput $input
+      [ -z "$input" ] && die "TODO: No task $item."
+      
+      shift
+      
+      # split the tags and make sure they all have the ^ prefix if it was not there.
+      taglist=""
+      for tag in $*
+      do
+         tag=`echo $tag | sed 's/^\([^\^]\)/\^\1/'`
+         key=$tag
+         escapekey
+         if echo $existing_tags | grep -q "$key"
+         then
+            true
+         else
+            taglist="$taglist $tag"
+         fi
+      done
+      taglist=`echo $taglist | tr " " "\n" | sort -u`
+      
+      # for each entry on the tag list find the pattern and remove it from the input string.
+      for tag in $taglist
+      do
+         input=`echo $input | sed 's/[[:space:]]'$tag'[[:space:]]/ /g' | sed 's/[[:space:]]'$tag'$//g' | sed 's/^'$tag'[[:space:]]//g'`
+      done
+      
+      replaceOrPrepend 'replace' $TODO_SH $item "$input"
    ;;
    
    * )
