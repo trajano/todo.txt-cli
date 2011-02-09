@@ -54,7 +54,7 @@ shorthelp()
 		    del|rm ITEM# [TERM]
 		    dp|depri ITEM#[, ITEM#, ITEM#, ...]
 		    do ITEM#[, ITEM#, ITEM#, ...]
-                    edit ITEM#
+                    edit [ITEM#]
 		    help
 		    list|ls [TERM...]
 		    listall|lsa [TERM...]
@@ -127,8 +127,9 @@ help()
 		    do ITEM#[, ITEM#, ITEM#, ...]
 		      Marks task(s) on line ITEM# as done in todo.txt.
 
-                    edit ITEM#
-                      Loads up the item into $TODO_EDITOR
+                    edit [ITEM#]
+                      Loads up the item into $TODO_EDITOR.  If the item# is not specified
+                      then the whole file is loaded up into $TODO_EDITOR.
 
 		    help
 		      Display this help message.
@@ -984,30 +985,34 @@ case $action in
       _addto "$DESC_FILE" "$input"
    ;;
    
-   "edit" )
-      errmsg="usage: $TODO_SH edit ITEM#"
-      # shift so we get arguments to the do request
-      cmd=$1
-      shift;
-      [ "$#" -eq 0 ] && die "$errmsg"
-      item=$1
-      [ -z "$item" ] && die "$errmsg"
-      [[ "$item" = +([0-9]) ]] || die "$errmsg"
-      input=$(sed "$item!d" "$TODO_FILE")
-      cleaninput $input
-      [ -z "$input" ] && die "TODO: No task $item."
-      echo "$input" > "$TMP_FILE"
-      if "$TODO_EDITOR" "$TMP_FILE"
-      then
-         input=`cat $TMP_FILE`
-         cleaninput $input
-         replaceOrPrepend 'replace' "$cmd" "$item" "$input"
-      fi
-   ;;
-   
-   "help" )
-      if [ -t 1 ] ; then # STDOUT is a TTY
-         if which "${PAGER:-less}" >/dev/null 2>&1; then
+"edit" )
+    errmsg="usage: $TODO_SH edit [ITEM#]"
+    # shift so we get arguments to the do request
+    cmd=$1
+    shift;
+    if [ "$#" -eq 0 ]
+    then
+        "$TODO_EDITOR" "$TODO_FILE"
+    else
+    	item=$1
+    	[ -z "$item" ] && die "$errmsg"
+    	[[ "$item" = +([0-9]) ]] || die "$errmsg"
+    	input=$(sed "$item!d" "$TODO_FILE")
+        cleaninput $input
+        [ -z "$input" ] && die "TODO: No task $item."
+        echo "$input" > "$TMP_FILE"
+        if "$TODO_EDITOR" "$TMP_FILE"
+        then
+            input=`cat $TMP_FILE`
+            cleaninput $input
+            replaceOrPrepend 'replace' "$cmd" "$item" "$input"
+        fi
+    fi
+    ;;
+
+"help" )
+    if [ -t 1 ] ; then # STDOUT is a TTY
+        if which "${PAGER:-less}" >/dev/null 2>&1; then
             # we have a working PAGER (or less as a default)
             help | "${PAGER:-less}" && exit 0
          fi
