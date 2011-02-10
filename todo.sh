@@ -947,11 +947,20 @@ case $action in
     errmsg="usage: $TODO_SH describe [^TAG|+PROJECT|@CONTEXT] \"DESCRIPTION\""
 
     shift
+
+    [ "$#" -eq 0 ] && die "$errmsg"
     category=$1
 
     # TODO error if the first character of $catgory is not ^+@
+    if echo $category | grep -q '^[+@^]'
+    then
+        true
+    else
+        die "$errmsg"
+    fi
 
     shift
+    [ "$#" -eq 0 ] && die "$errmsg"
     input="$category $*"
 
     # escape potential bad regexp characters
