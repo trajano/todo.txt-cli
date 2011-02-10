@@ -945,83 +945,83 @@ case $action in
             fi
          else
             echo "$item is already marked done"
-        fi
-    done
-
-    if [ $TODOTXT_AUTO_ARCHIVE = 1 ]; then
-        archive
-    fi
-    ;;
-
-"describe" )
-    # Finds the first parameter in $TODO_DESC using
-    # the pattern where you search from the beginning
-    # If it finds it, remove the value
-    # Add the new value to the file
-    # Sort the file and save it again
-    # TODO add error handling 
-    errmsg="usage: $TODO_SH describe [^TAG|+PROJECT|@CONTEXT] \"DESCRIPTION\""
-
-    shift
-
-    [ "$#" -eq 0 ] && die "$errmsg"
-    category=$1
-
-    # TODO error if the first character of $catgory is not ^+@
-    if echo $category | grep -q '^[+@^]'
-    then
-        true
-    else
-        die "$errmsg"
-    fi
-
-    shift
-    [ "$#" -eq 0 ] && die "$errmsg"
-    input="$category $*"
-
-    # escape potential bad regexp characters
-    # TODO convert the escape into a function
-    key="$category"
-    escapekey $key
-    if grep -q "^$key " "$DESC_FILE"
-    then
-      # Found an existing category value, so just 
-      # remove it because we are replacing it with
-      # a new one
-      grep -v "^$key" "$DESC_FILE" > "$TMP_FILE"
-      cat $TMP_FILE > $DESC_FILE
-    fi 
-    _addto "$DESC_FILE" "$input"
-    ;;
-
-"edit" )
-    errmsg="usage: $TODO_SH edit [ITEM#]"
-    # shift so we get arguments to the do request
-    cmd=$1
-    shift;
-    if [ "$#" -eq 0 ]
-    then
-        "$TODO_EDITOR" "$TODO_FILE"
-    else
-    	item=$1
-    	[ -z "$item" ] && die "$errmsg"
-    	[[ "$item" = +([0-9]) ]] || die "$errmsg"
-    	input=$(sed "$item!d" "$TODO_FILE")
-        cleaninput $input
-        [ -z "$input" ] && die "TODO: No task $item."
-        echo "$input" > "$TMP_FILE"
-        if "$TODO_EDITOR" "$TMP_FILE"
-        then
+         fi
+      done
+      
+      if [ $TODOTXT_AUTO_ARCHIVE = 1 ]; then
+         archive
+      fi
+   ;;
+   
+   "describe" )
+      # Finds the first parameter in $TODO_DESC using
+      # the pattern where you search from the beginning
+      # If it finds it, remove the value
+      # Add the new value to the file
+      # Sort the file and save it again
+      # TODO add error handling
+      errmsg="usage: $TODO_SH describe [^TAG|+PROJECT|@CONTEXT] \"DESCRIPTION\""
+      
+      shift
+      
+      [ "$#" -eq 0 ] && die "$errmsg"
+      category=$1
+      
+      # TODO error if the first character of $catgory is not ^+@
+      if echo $category | grep -q '^[+@^]'
+      then
+         true
+      else
+         die "$errmsg"
+      fi
+      
+      shift
+      [ "$#" -eq 0 ] && die "$errmsg"
+      input="$category $*"
+      
+      # escape potential bad regexp characters
+      # TODO convert the escape into a function
+      key="$category"
+      escapekey $key
+      if grep -q "^$key " "$DESC_FILE"
+      then
+         # Found an existing category value, so just
+         # remove it because we are replacing it with
+         # a new one
+         grep -v "^$key" "$DESC_FILE" > "$TMP_FILE"
+         cat $TMP_FILE > $DESC_FILE
+      fi
+      _addto "$DESC_FILE" "$input"
+   ;;
+   
+   "edit" )
+      errmsg="usage: $TODO_SH edit [ITEM#]"
+      # shift so we get arguments to the do request
+      cmd=$1
+      shift;
+      if [ "$#" -eq 0 ]
+      then
+         "$TODO_EDITOR" "$TODO_FILE"
+      else
+         item=$1
+         [ -z "$item" ] && die "$errmsg"
+         [[ "$item" = +([0-9]) ]] || die "$errmsg"
+         input=$(sed "$item!d" "$TODO_FILE")
+         cleaninput $input
+         [ -z "$input" ] && die "TODO: No task $item."
+         echo "$input" > "$TMP_FILE"
+         if "$TODO_EDITOR" "$TMP_FILE"
+         then
             input=`cat $TMP_FILE`
             cleaninput $input
             replaceOrPrepend 'replace' "$cmd" "$item" "$input"
-        fi
-    fi
-    ;;
-
-"help" )
-    if [ -t 1 ] ; then # STDOUT is a TTY
-        if which "${PAGER:-less}" >/dev/null 2>&1; then
+         fi
+      fi
+   ;;
+   
+   "help" )
+      if [ -t 1 ] ; then # STDOUT is a TTY
+         if which "${PAGER:-less}" >/dev/null 2>&1; then
             # we have a working PAGER (or less as a default)
             help | "${PAGER:-less}" && exit 0
          fi
