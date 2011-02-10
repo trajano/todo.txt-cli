@@ -1,4 +1,8 @@
 VERSION-FILE
+todo.txt
+desc.txt
+done.txt
+report.txt
 tests/test-results
 tests/trash\ directory.*
 *~
