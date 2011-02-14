@@ -21,6 +21,19 @@ version() {
    exit 1
 }
 
+echo() {
+   # Override the echo command with this function to handle the case when there is no data but
+   # -n is the first parameter
+   if [ "$1" != "-n" ] || [ $# -ne 1 ]
+   then
+      if [ ! "$ECHOCMD" ]
+      then
+         ECHOCMD=`which echo`
+      fi
+      "$ECHOCMD" $*
+   fi
+}
+
 # Set script name and full path early.
 TODO_SH=$(basename "$0")
 TODO_FULL_SH="$0"
@@ -637,7 +650,7 @@ ACTION=${1:-$TODOTXT_DEFAULT_ACTION}
 
 [ -f "$DESC_FILE" ] || cp /dev/null "$DESC_FILE"
 [ -x "$TODO_EDITOR" ] || die "Fatal Error: $TODO_EDITOR is not executable"
-[ -w "$TMP_FILE"  ] || echo -n > "$TMP_FILE" || die "Fatal Error: Unable to write to $TMP_FILE"
+[ -w "$TMP_FILE"  ] || cat /dev/null > "$TMP_FILE" || die "Fatal Error: Unable to write to $TMP_FILE"
 [ -f "$TODO_FILE" ] || cp /dev/null "$TODO_FILE"
 [ -f "$DONE_FILE" ] || cp /dev/null "$DONE_FILE"
 [ -f "$REPORT_FILE" ] || cp /dev/null "$REPORT_FILE"

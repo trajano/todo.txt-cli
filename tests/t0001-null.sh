@@ -16,7 +16,7 @@ TODO: 0 of 0 tasks shown
 EOF
 
 test_expect_success 'null ls' '
-    todo.sh ls > output && test_cmp expect output
+    todo.sh ls > output1 && test_cmp expect output1
 '
 test_expect_success 'null list' '
     todo.sh list > output && test_cmp expect output
