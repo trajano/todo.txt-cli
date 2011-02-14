@@ -277,7 +277,7 @@ help()
 
 die()
 {
-   echo "$*"
+   echo -e "$*"
    exit 1
 }
 
@@ -1133,8 +1133,7 @@ case $action in
       then
          ## A priority was specified
          pri=$( printf "%s\n" "$1" | tr 'a-z' 'A-Z' | grep '^[A-Z]$' ) || {
-            die "usage: $TODO_SH listpri PRIORITY
-            note: PRIORITY must a single letter from A to Z."
+            die "usage: $TODO_SH listpri PRIORITY\nnote: PRIORITY must a single letter from A to Z."
          }
       else
          ## No priority specified; show all priority tasks
@@ -1197,8 +1196,7 @@ case $action in
       item=$2
       newpri=$( printf "%s\n" "$3" | tr 'a-z' 'A-Z' )
       
-      errmsg="usage: $TODO_SH pri ITEM# PRIORITY
-      note: PRIORITY must be anywhere from A to Z."
+      errmsg="usage: $TODO_SH pri ITEM# PRIORITY\nnote: PRIORITY must be anywhere from A to Z."
       
       [ "$#" -ne 3 ] && die "$errmsg"
       [[ "$item" = +([0-9]) ]] || die "$errmsg"
