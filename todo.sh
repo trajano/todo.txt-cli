@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
 # === HEAVY LIFTING ===
 shopt -s extglob
