@@ -959,9 +959,9 @@ case $action in
          [[ "$item" = +([0-9]) ]] || die "$errmsg"
          todo=$(sed "$item!d" "$TODO_FILE")
          [ -z "$todo" ] && die "TODO: No task $item."
-         
+
          sed -e $item"s/^(.) //" "$TODO_FILE" > /dev/null 2>&1
-         
+
          if [ "$?" -eq 0 ]; then
             #it's all good, continue
             sed -i.bak -e $item"s/^(.) //" "$TODO_FILE"
@@ -969,9 +969,6 @@ case $action in
                NEWTODO=$(sed "$item!d" "$TODO_FILE")
                echo "$item $NEWTODO"
                echo "TODO: $item deprioritized."
-               # shift so we get arguments to the do request
-               shift;
-               [ "$#" -eq 0 ] && die "$errmsg"
             fi
          else
             die "$errmsg"
