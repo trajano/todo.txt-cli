@@ -21,19 +21,6 @@ version() {
    exit 1
 }
 
-echo() {
-   # Override the echo command with this function to handle the case when there is no data but
-   # -n is the first parameter
-   if [ "$1" != "-n" ] || [ $# -ne 1 ]
-   then
-      if [ ! "$ECHOCMD" ]
-      then
-         ECHOCMD=`which echo`
-      fi
-      "$ECHOCMD" $*
-   fi
-}
-
 # Set script name and full path early.
 TODO_SH=$(basename "$0")
 TODO_FULL_SH="$0"
@@ -304,7 +291,7 @@ cleaninput()
 {
    # Cleanup the input
    # Replace newlines with spaces Always
-   input=`echo $input | tr -d '\r|\n'`
+   input=`echo $input | tr -d '\r\n'`
    
    action_regexp="^\(append\|app\|prepend\|prep\|replace\)$"
    
