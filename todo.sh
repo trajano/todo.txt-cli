@@ -68,12 +68,12 @@ shorthelp()
 	if [ -f "$TODO_ACTIONS_DIR/$1" -a -x "$TODO_ACTIONS_DIR/$1" ] 
         then
             echo -n '    '
-            "$TODO_ACTIONS_DIR/$1" shorthelp
+            "$TODO_ACTIONS_DIR/$1" usage short
             return 0
 	elif [ -f "$TODO_ACTIONS_DIR/$1" ]
         then
             echo -n '    '
-            . "$TODO_ACTIONS_DIR/$1" shorthelp
+            . "$TODO_ACTIONS_DIR/$1" usage short
             return 0
         else
             echo -n '    '
