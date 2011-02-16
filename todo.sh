@@ -186,7 +186,7 @@ help()
             "$TODO_ACTIONS_DIR/$1" usage
 	elif [ -f "$TODO_ACTIONS_DIR/$1" ]
         then
-            "$TODO_ACTIONS_DIR/$1" usage
+            . "$TODO_ACTIONS_DIR/$1" usage
         else
             case "$1" in
               add)
@@ -206,6 +206,13 @@ help()
 		      Adds SECOND THING I NEED TO DO to you todo.txt on its own line.
 		      Project and context notation optional.
 		      Quotes optional.
+		EndOfHelp
+                ;;
+              addto)
+                cat <<-EndOfHelp
+		    addto DEST "TEXT TO ADD"
+		      Adds a line of text to any file located in the todo.txt directory.
+		      For example, addto inbox.txt "decide about vacation"
 		EndOfHelp
                 ;;
             esac
@@ -239,10 +246,6 @@ $(basename $action)
     done
 
     cat <<-EndHelp
-		    addto DEST "TEXT TO ADD"
-		      Adds a line of text to any file located in the todo.txt directory.
-		      For example, addto inbox.txt "decide about vacation"
-
 		    append ITEM# "TEXT TO APPEND"
 		    app ITEM# "TEXT TO APPEND"
 		      Adds TEXT TO APPEND to the end of the task on line ITEM#.
