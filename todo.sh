@@ -65,15 +65,15 @@ shorthelp()
 {
     if [ $# -eq 1 ]
     then
-	if [ -f "$TODO_ACTIONS_DIR/$action" -a -x "$TODO_ACTIONS_DIR/$action" ] 
+	if [ -f "$TODO_ACTIONS_DIR/$1" -a -x "$TODO_ACTIONS_DIR/$1" ] 
         then
             echo -n '    '
-            "$TODO_ACTIONS_DIR" shorthelp
+            "$TODO_ACTIONS_DIR/$1" shorthelp
             return 0
-	elif [ -f "$TODO_ACTIONS_DIR/$action" ]
+	elif [ -f "$TODO_ACTIONS_DIR/$1" ]
         then
             echo -n '    '
-            . "$TODO_ACTIONS_DIR" shorthelp
+            . "$TODO_ACTIONS_DIR/$1" shorthelp
             return 0
         else
             case "$1" in
