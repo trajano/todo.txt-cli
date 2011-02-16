@@ -265,12 +265,98 @@ help()
 		      Marks task(s) on line ITEM# as done in todo.txt.
 		EndOfHelp
                 ;;
-
               help)
                 cat <<-EndOfHelp
 		    help [ACTIONS]
 		      Display this help message.  If ACTIONS are specified
 		      then specific action help is shown.
+		EndOfHelp
+                ;;
+              list)
+                cat <<-EndOfHelp
+		    list [TERM...]
+		    ls [TERM...]
+		      Displays all tasks that contain TERM(s) sorted by priority with line
+		      numbers.  If no TERM specified, lists entire todo.txt.
+		EndOfHelp
+                ;;
+              listall)
+                cat <<-EndOfHelp
+		    listall [TERM...]
+		    lsa [TERM...]
+		      Displays all the lines in todo.txt AND done.txt that contain TERM(s)
+		      sorted by priority with line  numbers.  If no TERM specified, lists
+		      entire todo.txt AND done.txt concatenated and sorted.
+		EndOfHelp
+                ;;
+              listcon)
+                cat <<-EndOfHelp
+		    listcon
+		    lsc
+		      Lists all the task contexts that start with the @ sign in todo.txt.
+		EndOfHelp
+                ;;
+              listfile)
+                cat <<-EndOfHelp
+		    listfile SRC [TERM...]
+		    lf SRC [TERM...]
+		      Displays all the lines in SRC file located in the todo.txt directory,
+		      sorted by priority with line  numbers.  If TERM specified, lists
+		      all lines that contain TERM in SRC file.
+		EndOfHelp
+                ;;
+              listpri)
+                cat <<-EndOfHelp
+		    listpri [PRIORITY]
+		    lsp [PRIORITY]
+		      Displays all tasks prioritized PRIORITY.
+		      If no PRIORITY specified, lists all prioritized tasks.
+		EndOfHelp
+                ;;
+              listproj)
+                cat <<-EndOfHelp
+		    listproj
+		    lsprj
+		      Lists all the projects that start with the + sign in todo.txt.
+		EndOfHelp
+                ;;
+              move)
+                cat <<-EndOfHelp
+		    move ITEM# DEST [SRC]
+		    mv ITEM# DEST [SRC]
+		      Moves a line from source text file (SRC) to destination text file (DEST).
+		      Both source and destination file must be located in the directory defined
+		      in the configuration directory.  When SRC is not defined
+		      it's by default todo.txt.
+		EndOfHelp
+                ;;
+              prepend)
+                cat <<-EndOfHelp
+		    prepend ITEM# "TEXT TO PREPEND"
+		    prep ITEM# "TEXT TO PREPEND"
+		      Adds TEXT TO PREPEND to the beginning of the task on line ITEM#.
+		      Quotes optional.
+		EndOfHelp
+                ;;
+              pri)
+                cat <<-EndOfHelp
+		    pri ITEM# PRIORITY
+		    p ITEM# PRIORITY
+		      Adds PRIORITY to task on line ITEM#.  If the task is already
+		      prioritized, replaces current priority with new PRIORITY.
+		      PRIORITY must be an uppercase letter between A and Z.
+		EndOfHelp
+                ;;
+              replace)
+                cat <<-EndOfHelp
+		    replace ITEM# "UPDATED TODO"
+		      Replaces task on line ITEM# with UPDATED TODO.
+		EndOfHelp
+                ;;
+              report)
+                cat <<-EndOfHelp
+		    report
+		      Adds the number of open tasks and done tasks to report.txt.
 		EndOfHelp
                 ;;
             esac
@@ -302,62 +388,6 @@ $(basename $action)
     do
         help $action
     done
-
-    cat <<-EndHelp
-		    list [TERM...]
-		    ls [TERM...]
-		      Displays all tasks that contain TERM(s) sorted by priority with line
-		      numbers.  If no TERM specified, lists entire todo.txt.
-
-		    listall [TERM...]
-		    lsa [TERM...]
-		      Displays all the lines in todo.txt AND done.txt that contain TERM(s)
-		      sorted by priority with line  numbers.  If no TERM specified, lists
-		      entire todo.txt AND done.txt concatenated and sorted.
-
-		    listcon
-		    lsc
-		      Lists all the task contexts that start with the @ sign in todo.txt.
-
-		    listfile SRC [TERM...]
-		    lf SRC [TERM...]
-		      Displays all the lines in SRC file located in the todo.txt directory,
-		      sorted by priority with line  numbers.  If TERM specified, lists
-		      all lines that contain TERM in SRC file.
-
-		    listpri [PRIORITY]
-		    lsp [PRIORITY]
-		      Displays all tasks prioritized PRIORITY.
-		      If no PRIORITY specified, lists all prioritized tasks.
-
-		    listproj
-		    lsprj
-		      Lists all the projects that start with the + sign in todo.txt.
-
-		    move ITEM# DEST [SRC]
-		    mv ITEM# DEST [SRC]
-		      Moves a line from source text file (SRC) to destination text file (DEST).
-		      Both source and destination file must be located in the directory defined
-		      in the configuration directory.  When SRC is not defined
-		      it's by default todo.txt.
-
-		    prepend ITEM# "TEXT TO PREPEND"
-		    prep ITEM# "TEXT TO PREPEND"
-		      Adds TEXT TO PREPEND to the beginning of the task on line ITEM#.
-		      Quotes optional.
-
-		    pri ITEM# PRIORITY
-		    p ITEM# PRIORITY
-		      Adds PRIORITY to task on line ITEM#.  If the task is already
-		      prioritized, replaces current priority with new PRIORITY.
-		      PRIORITY must be an uppercase letter between A and Z.
-
-		    replace ITEM# "UPDATED TODO"
-		      Replaces task on line ITEM# with UPDATED TODO.
-
-		    report
-		      Adds the number of open tasks and done tasks to report.txt.
-	EndHelp
 
     cat <<-EndHelp
 
