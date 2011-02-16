@@ -65,8 +65,13 @@ shorthelp()
 {
     if [ $# -eq 1 ]
     then
-	if false # if it is in the action folder
+	if [ -f "$TODO_ACTION_DIR/$action" && -x "$TODO_ACTION_DIR/$action" ] 
         then
+            "$TODO_ACTION_DIR" shorthelp
+            return 0
+	elif [ -f "$TODO_ACTION_DIR/$action" ]
+        then
+            . "$TODO_ACTION_DIR" shorthelp
             return 0
         else
             case "$1" in
@@ -105,8 +110,10 @@ shorthelp()
                     prepend|prep ITEM# "TEXT TO PREPEND"
                     pri|p ITEM# PRIORITY
                     replace ITEM# "UPDATED TODO"
-                    report
 	archive
+                ;;
+              report)
+                echo '    report'
                 ;;
             esac
             return 0
@@ -117,6 +124,21 @@ shorthelp()
 
 		  Actions:
 	EndHelp
+
+    actions="$builtin_actions"
+    if [ -d "$TODO_ACTIONS_DIR" ]
+    then
+        for action in "$TODO_ACTIONS_DIR"/*
+        do
+            if [ -f "$action" ]
+            then
+                actions="$builtin_actions
+$action
+"
+            fi
+        done
+    fi
+
     for action in $(echo "$builtin_actions" | sort -u )
     do
         shorthelp $action
