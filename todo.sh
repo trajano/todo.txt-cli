@@ -107,7 +107,7 @@ shorthelp()
                 echo 'do ITEM#[, ITEM#, ITEM#, ...]'
                 ;;
               help)
-                echo 'help'
+                echo 'help [ACTIONS]'
                 ;;
               list)
                 echo 'list|ls [TERM...]'
@@ -179,7 +179,14 @@ $(basename $action)
 
 help()
 {
-    if [ $# -eq 1 ]
+    if [ $# -gt 1 ]
+    then
+        for action in $*
+        do
+            help $action
+        done
+        return 0
+    elif [ $# -eq 1 ]
     then
 	if [ -f "$TODO_ACTIONS_DIR/$1" -a -x "$TODO_ACTIONS_DIR/$1" ] 
         then
@@ -215,6 +222,37 @@ help()
 		      For example, addto inbox.txt "decide about vacation"
 		EndOfHelp
                 ;;
+              append)
+                cat <<-EndOfHelp
+		    append ITEM# "TEXT TO APPEND"
+		    app ITEM# "TEXT TO APPEND"
+		      Adds TEXT TO APPEND to the end of the task on line ITEM#.
+		      Quotes optional.
+		EndOfHelp
+                ;;
+              archive)
+                cat <<-EndOfHelp
+		    archive
+		      Moves all done tasks from todo.txt to done.txt and removes blank lines.
+		EndOfHelp
+                ;;
+              command)
+                cat <<-EndOfHelp
+		    command [ACTIONS]
+		      Runs the remaining arguments using only todo.sh builtins.
+		      Will not call any .todo.actions.d scripts.
+		EndOfHelp
+                ;;
+              del)
+                cat <<-EndOfHelp
+		    del ITEM# [TERM]
+		    rm ITEM# [TERM]
+		      Deletes the task on line ITEM# in todo.txt.
+		      If TERM specified, deletes only TERM from the task.
+		EndOfHelp
+                ;;
+
+
             esac
         fi
         echo ""
@@ -246,23 +284,6 @@ $(basename $action)
     done
 
     cat <<-EndHelp
-		    append ITEM# "TEXT TO APPEND"
-		    app ITEM# "TEXT TO APPEND"
-		      Adds TEXT TO APPEND to the end of the task on line ITEM#.
-		      Quotes optional.
-
-		    archive
-		      Moves all done tasks from todo.txt to done.txt and removes blank lines.
-
-		    command [ACTIONS]
-		      Runs the remaining arguments using only todo.sh builtins.
-		      Will not call any .todo.actions.d scripts.
-
-		    del ITEM# [TERM]
-		    rm ITEM# [TERM]
-		      Deletes the task on line ITEM# in todo.txt.
-		      If TERM specified, deletes only TERM from the task.
-
 		    depri ITEM#[, ITEM#, ITEM#, ...]
 		    dp ITEM#[, ITEM#, ITEM#, ...]
 		      Deprioritizes (removes the priority) from the task(s)
@@ -1116,13 +1137,14 @@ case $action in
     ;;
 
 "help" )
+    shift 
     if [ -t 1 ] ; then # STDOUT is a TTY
         if which "${PAGER:-less}" >/dev/null 2>&1; then
             # we have a working PAGER (or less as a default)
-            help | "${PAGER:-less}" && exit 0
+            help $* | "${PAGER:-less}" && exit 0
         fi
     fi
-    help # just in case something failed above, we go ahead and just spew to STDOUT
+    help $* # just in case something failed above, we go ahead and just spew to STDOUT
     ;;
 
 "shorthelp" )
