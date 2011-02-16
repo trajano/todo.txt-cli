@@ -36,7 +36,7 @@ append
 archive
 command
 del
-dp
+depri
 do
 help
 list
@@ -98,21 +98,35 @@ shorthelp()
                 echo 'command [ACTIONS]'
                 ;;
               del)
-                   cat <<-archive
-                    del|rm ITEM# [TERM]
-                    dp|depri ITEM#[, ITEM#, ITEM#, ...]
-                    do ITEM#[, ITEM#, ITEM#, ...]
-                    help
-                    list|ls [TERM...]
+                echo 'del|rm ITEM# [TERM]'
+                ;;
+              depri)
+                echo 'dp|depri ITEM#[, ITEM#, ITEM#, ...]'
+                ;;
+              do)
+                echo 'do ITEM#[, ITEM#, ITEM#, ...]'
+                ;;
+              help)
+                echo 'help'
+                ;;
+              list)
+                echo 'list|ls [TERM...]'
+                ;;
+              listall)
+                cat <<-archive
                     listall|lsa [TERM...]
                     listcon|lsc
                     listfile|lf SRC [TERM...]
                     listpri|lsp [PRIORITY]
                     listproj|lsprj
                     move|mv ITEM# DEST [SRC]
-                    prepend|prep ITEM# "TEXT TO PREPEND"
-                    pri|p ITEM# PRIORITY
 	archive
+;;
+              prepend)
+                echo 'prepend|prep ITEM# "TEXT TO PREPEND"'
+                ;;
+              pri)
+                echo 'pri|p ITEM# PRIORITY'
                 ;;
               replace)
                 echo 'replace ITEM# "UPDATED TODO"'
