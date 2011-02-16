@@ -175,8 +175,22 @@ help()
 
 		    report
 		      Adds the number of open tasks and done tasks to report.txt.
+	EndHelp
 
+    if [ -d "$TODO_ACTIONS_DIR" ]
+    then
+        echo ""
+        for action in "$TODO_ACTIONS_DIR"/*
+        do
+            if [ -f "$action" -a -x "$action" ]
+            then
+                "$action" usage
+            fi
+        done
+        echo ""
+    fi
 
+    cat <<-EndHelp
 
 		  Options:
 		    -@
@@ -236,18 +250,6 @@ help()
 		    TODOTXT_FINAL_FILTER="sed ..."  customize list after color, P@+ hiding
 	EndHelp
 
-    if [ -d "$TODO_ACTIONS_DIR" ]
-    then
-        echo ""
-        for action in "$TODO_ACTIONS_DIR"/*
-        do
-            if [ -f "$action" -a -x "$action" ]
-            then
-                "$action" usage
-            fi
-        done
-        echo ""
-    fi
 
 
     exit 1
