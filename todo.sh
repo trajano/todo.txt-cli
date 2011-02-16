@@ -157,7 +157,10 @@ shorthelp()
     then
         for action in "$TODO_ACTIONS_DIR"/*
         do
-            if [ -f "$action" ]
+            if echo $action | grep -q '\.'
+            then
+                true
+            elif [ -f "$action" ]
             then
                 actions="$actions
 $(basename $action)
@@ -375,7 +378,10 @@ help()
     then
         for action in "$TODO_ACTIONS_DIR"/*
         do
-            if [ -f "$action" ]
+            if echo $action | grep -q '\.'
+            then
+                true
+            elif [ -f "$action" ]
             then
                 actions="$actions
 $(basename $action)
