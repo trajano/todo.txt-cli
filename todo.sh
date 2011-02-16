@@ -251,8 +251,28 @@ help()
 		      If TERM specified, deletes only TERM from the task.
 		EndOfHelp
                 ;;
+              depri)
+                cat <<-EndOfHelp
+		    depri ITEM#[, ITEM#, ITEM#, ...]
+		    dp ITEM#[, ITEM#, ITEM#, ...]
+		      Deprioritizes (removes the priority) from the task(s)
+		      on line ITEM# in todo.txt.
+		EndOfHelp
+                ;;
+              do)
+                cat <<-EndOfHelp
+		    do ITEM#[, ITEM#, ITEM#, ...]
+		      Marks task(s) on line ITEM# as done in todo.txt.
+		EndOfHelp
+                ;;
 
-
+              help)
+                cat <<-EndOfHelp
+		    help [ACTIONS]
+		      Display this help message.  If ACTIONS are specified
+		      then specific action help is shown.
+		EndOfHelp
+                ;;
             esac
         fi
         echo ""
@@ -284,17 +304,6 @@ $(basename $action)
     done
 
     cat <<-EndHelp
-		    depri ITEM#[, ITEM#, ITEM#, ...]
-		    dp ITEM#[, ITEM#, ITEM#, ...]
-		      Deprioritizes (removes the priority) from the task(s)
-		      on line ITEM# in todo.txt.
-
-		    do ITEM#[, ITEM#, ITEM#, ...]
-		      Marks task(s) on line ITEM# as done in todo.txt.
-
-		    help
-		      Display this help message.
-
 		    list [TERM...]
 		    ls [TERM...]
 		      Displays all tasks that contain TERM(s) sorted by priority with line
