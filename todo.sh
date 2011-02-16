@@ -67,10 +67,12 @@ shorthelp()
     then
 	if [ -f "$TODO_ACTION_DIR/$action" && -x "$TODO_ACTION_DIR/$action" ] 
         then
+            echo -n '    '
             "$TODO_ACTION_DIR" shorthelp
             return 0
 	elif [ -f "$TODO_ACTION_DIR/$action" ]
         then
+            echo -n '    '
             . "$TODO_ACTION_DIR" shorthelp
             return 0
         else
