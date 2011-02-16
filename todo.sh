@@ -502,7 +502,8 @@ do
         OVR_TODOTXT_FORCE=1
         ;;
     h )
-        shorthelp
+        $0 shorthelp
+        exit 0
         ;;
     n )
         OVR_TODOTXT_PRESERVE_LINE_NUMBERS=0
@@ -1067,6 +1068,10 @@ case $action in
         fi
     fi
     help # just in case something failed above, we go ahead and just spew to STDOUT
+    ;;
+
+"shorthelp" )
+    shorthelp
     ;;
 
 "list" | "ls" )
