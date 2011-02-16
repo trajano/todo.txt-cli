@@ -160,7 +160,7 @@ shorthelp()
             if echo $action | grep -q '\\.'
             then
                 true
-            elif [ -f "$action" ]
+            elif [ -f "$action" -a ! -L "$action" ]
             then
                 actions="$actions
 $(basename $action)
@@ -381,7 +381,7 @@ help()
             if echo $action | grep -q '\\.'
             then
                 true
-            elif [ -f "$action" ]
+            elif [ -f "$action" -a ! -L "$action" ]
             then
                 actions="$actions
 $(basename $action)
