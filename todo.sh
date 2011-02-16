@@ -43,6 +43,8 @@ shorthelp()
 		  Usage: $oneline_usage
 
 		  Actions:
+	EndHelp
+    cat <<-EndHelp
 		    add|a "THING I NEED TO DO +project @context"
 		    addto DEST "TEXT TO ADD"
 		    addm "THINGS I NEED TO DO
@@ -77,6 +79,9 @@ help()
 		  Usage: $oneline_usage
 
 		  Actions:
+	EndHelp
+
+    cat <<-EndHelp
 		    add "THING I NEED TO DO +project @context"
 		    a "THING I NEED TO DO +project @context"
 		      Adds THING I NEED TO DO to your todo.txt file on its own line.
