@@ -113,15 +113,23 @@ shorthelp()
                 echo 'list|ls [TERM...]'
                 ;;
               listall)
-                cat <<-archive
-                    listall|lsa [TERM...]
-                    listcon|lsc
-                    listfile|lf SRC [TERM...]
-                    listpri|lsp [PRIORITY]
-                    listproj|lsprj
-                    move|mv ITEM# DEST [SRC]
-	archive
-;;
+                echo 'listall|lsa [TERM...]'
+                ;;
+              listcon)
+                echo 'listcon|lsc'
+                ;;
+              listfile)
+                echo 'listfile|lf SRC [TERM...]'
+                ;;
+              listpri)
+                echo 'listpri|lsp [PRIORITY]'
+                ;;
+              listproj)
+                echo 'listproj|lsprj'
+                ;;
+              move)
+                echo 'move|mv ITEM# DEST [SRC]'
+                ;;
               prepend)
                 echo 'prepend|prep ITEM# "TEXT TO PREPEND"'
                 ;;
