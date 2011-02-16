@@ -138,7 +138,7 @@ shorthelp()
             if [ -f "$action" ]
             then
                 actions="$actions
-$(basename action)
+$(basename $action)
 "
             fi
         done
