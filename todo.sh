@@ -76,25 +76,26 @@ shorthelp()
             . "$TODO_ACTIONS_DIR/$1" shorthelp
             return 0
         else
+            echo -n '    '
             case "$1" in
               add)
-                echo '    add|a "THING I NEED TO DO +project @context"'
+                echo 'add|a "THING I NEED TO DO +project @context"'
                 ;;
               addto)
-                echo '    addto DEST "TEXT TO ADD"'
+                echo 'addto DEST "TEXT TO ADD"'
                 ;;
               addm)
-                echo '    addm "THINGS I NEED TO DO'
+                echo 'addm "THINGS I NEED TO DO'
                 echo '          MORE THINGS I NEED TO DO"'
                 ;;
               append)
-                echo '    append|app ITEM# "TEXT TO APPEND"'
+                echo 'append|app ITEM# "TEXT TO APPEND"'
                 ;;
               archive)
-                echo '    archive'
+                echo 'archive'
                 ;;
               command)
-                echo '    command [ACTIONS]'
+                echo 'command [ACTIONS]'
                 ;;
               del)
                    cat <<-archive
@@ -111,11 +112,13 @@ shorthelp()
                     move|mv ITEM# DEST [SRC]
                     prepend|prep ITEM# "TEXT TO PREPEND"
                     pri|p ITEM# PRIORITY
-                    replace ITEM# "UPDATED TODO"
 	archive
                 ;;
+              replace)
+                echo 'replace ITEM# "UPDATED TODO"'
+                ;;
               report)
-                echo '    report'
+                echo 'report'
                 ;;
             esac
             return 0
@@ -134,14 +137,14 @@ shorthelp()
         do
             if [ -f "$action" ]
             then
-                actions="$builtin_actions
-$action
+                actions="$actions
+$(basename action)
 "
             fi
         done
     fi
 
-    for action in $(echo "$builtin_actions" | sort -u )
+    for action in $(echo "$actions" | sort -u )
     do
         shorthelp $action
     done
