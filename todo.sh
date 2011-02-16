@@ -179,26 +179,66 @@ $(basename $action)
 
 help()
 {
-    cat <<-EndHelp
-		  Usage: $oneline_usage
-
-		  Actions:
-	EndHelp
-
-    cat <<-EndHelp
+    if [ $# -eq 1 ]
+    then
+	if [ -f "$TODO_ACTIONS_DIR/$1" -a -x "$TODO_ACTIONS_DIR/$1" ] 
+        then
+            "$TODO_ACTIONS_DIR/$1" usage
+	elif [ -f "$TODO_ACTIONS_DIR/$1" ]
+        then
+            "$TODO_ACTIONS_DIR/$1" usage
+        else
+            case "$1" in
+              add)
+                cat <<-EndOfHelp
 		    add "THING I NEED TO DO +project @context"
 		    a "THING I NEED TO DO +project @context"
 		      Adds THING I NEED TO DO to your todo.txt file on its own line.
 		      Project and context notation optional.
 		      Quotes optional.
-
+		EndOfHelp
+                ;;
+              addm)
+                cat <<-EndOfHelp
 		    addm "FIRST THING I NEED TO DO +project1 @context
 		    SECOND THING I NEED TO DO +project2 @context"
 		      Adds FIRST THING I NEED TO DO to your todo.txt on its own line and
 		      Adds SECOND THING I NEED TO DO to you todo.txt on its own line.
 		      Project and context notation optional.
 		      Quotes optional.
+		EndOfHelp
+                ;;
+            esac
+        fi
+        echo ""
+        return 0
+    fi
+    cat <<-EndHelp
+		  Usage: $oneline_usage
 
+		  Actions:
+	EndHelp
+
+    actions="$builtin_actions"
+    if [ -d "$TODO_ACTIONS_DIR" ]
+    then
+        for action in "$TODO_ACTIONS_DIR"/*
+        do
+            if [ -f "$action" ]
+            then
+                actions="$actions
+$(basename $action)
+"
+            fi
+        done
+    fi
+
+    for action in $(echo "$actions" | sort -u )
+    do
+        help $action
+    done
+
+    cat <<-EndHelp
 		    addto DEST "TEXT TO ADD"
 		      Adds a line of text to any file located in the todo.txt directory.
 		      For example, addto inbox.txt "decide about vacation"
@@ -285,19 +325,6 @@ help()
 		    report
 		      Adds the number of open tasks and done tasks to report.txt.
 	EndHelp
-
-    if [ -d "$TODO_ACTIONS_DIR" ]
-    then
-        echo ""
-        for action in "$TODO_ACTIONS_DIR"/*
-        do
-            if [ -f "$action" -a -x "$action" ]
-            then
-                "$action" usage
-            fi
-        done
-        echo ""
-    fi
 
     cat <<-EndHelp
 
