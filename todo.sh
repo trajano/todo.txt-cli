@@ -28,6 +28,30 @@ export TODO_SH TODO_FULL_SH
 
 oneline_usage="$TODO_SH [-fhpantvV] [-d todo_config] action [task_number] [task_description]"
 
+builtin_actions="
+add
+addto
+addm
+append
+archive
+command
+del
+dp
+do
+help
+list
+listall
+listcon
+listfile
+listpri
+listproj
+move
+prepend
+pri
+replace
+report
+"
+
 usage()
 {
     cat <<-EndUsage
@@ -39,34 +63,65 @@ usage()
 
 shorthelp()
 {
+    if [ $# -eq 1 ]
+    then
+	if false # if it is in the action folder
+        then
+            return 0
+        else
+            case "$1" in
+              add)
+                echo '    add|a "THING I NEED TO DO +project @context"'
+                ;;
+              addto)
+                echo '    addto DEST "TEXT TO ADD"'
+                ;;
+              addm)
+                echo '    addm "THINGS I NEED TO DO'
+                echo '          MORE THINGS I NEED TO DO"'
+                ;;
+              append)
+                echo '    append|app ITEM# "TEXT TO APPEND"'
+                ;;
+              archive)
+                echo '    archive'
+                ;;
+              command)
+                echo '    command [ACTIONS]'
+                ;;
+              del)
+                   cat <<-archive
+                    del|rm ITEM# [TERM]
+                    dp|depri ITEM#[, ITEM#, ITEM#, ...]
+                    do ITEM#[, ITEM#, ITEM#, ...]
+                    help
+                    list|ls [TERM...]
+                    listall|lsa [TERM...]
+                    listcon|lsc
+                    listfile|lf SRC [TERM...]
+                    listpri|lsp [PRIORITY]
+                    listproj|lsprj
+                    move|mv ITEM# DEST [SRC]
+                    prepend|prep ITEM# "TEXT TO PREPEND"
+                    pri|p ITEM# PRIORITY
+                    replace ITEM# "UPDATED TODO"
+                    report
+	archive
+                ;;
+            esac
+            return 0
+        fi
+    fi
     cat <<-EndHelp
 		  Usage: $oneline_usage
 
 		  Actions:
 	EndHelp
+    for action in $(echo "$builtin_actions" | sort -u )
+    do
+        shorthelp $action
+    done
     cat <<-EndHelp
-		    add|a "THING I NEED TO DO +project @context"
-		    addto DEST "TEXT TO ADD"
-		    addm "THINGS I NEED TO DO
-		          MORE THINGS I NEED TO DO"
-		    append|app ITEM# "TEXT TO APPEND"
-		    archive
-		    command [ACTIONS]
-		    del|rm ITEM# [TERM]
-		    dp|depri ITEM#[, ITEM#, ITEM#, ...]
-		    do ITEM#[, ITEM#, ITEM#, ...]
-		    help
-		    list|ls [TERM...]
-		    listall|lsa [TERM...]
-		    listcon|lsc
-		    listfile|lf SRC [TERM...]
-		    listpri|lsp [PRIORITY]
-		    listproj|lsprj
-		    move|mv ITEM# DEST [SRC]
-		    prepend|prep ITEM# "TEXT TO PREPEND"
-		    pri|p ITEM# PRIORITY
-		    replace ITEM# "UPDATED TODO"
-		    report
 
 		  See "help" for more details.
 	EndHelp
