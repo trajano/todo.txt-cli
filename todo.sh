@@ -65,7 +65,7 @@ shorthelp()
 {
     if [ $# -eq 1 ]
     then
-	if [ -f "$TODO_ACTION_DIR/$action" && -x "$TODO_ACTION_DIR/$action" ] 
+	if [ -f "$TODO_ACTION_DIR/$action" -a -x "$TODO_ACTION_DIR/$action" ] 
         then
             echo -n '    '
             "$TODO_ACTION_DIR" shorthelp
