@@ -1,7 +1,4 @@
-#! /bin/bash
-
-# === HEAVY LIFTING ===
-shopt -s extglob
+#! /bin/sh
 
 # NOTE:  Todo.sh requires the .todo/config configuration file to run.
 # Place the .todo/config file in your home directory or use the -d option for a custom location.
@@ -310,12 +307,12 @@ replaceOrPrepend()
   shift; item=$1; shift
 
   [ -z "$item" ] && die "$errmsg"
-  [[ "$item" = +([0-9]) ]] || die "$errmsg"
+  echo "$item" | grep '[0-9]*' -q || die "$errmsg"
 
   todo=$(sed "$item!d" "$TODO_FILE")
   [ -z "$todo" ] && die "TODO: No task $item."
 
-  if [[ -z "$1" && $TODOTXT_FORCE = 0 ]]; then
+  if [ -z "$1" -a "$TODOTXT_FORCE" = 0 ]; then
     echo -n "$querytext"
     read input
   else
@@ -475,7 +472,15 @@ TODOTXT_SORT_COMMAND=${TODOTXT_SORT_COMMAND:-env LC_COLLATE=C sort -f -k2}
 TODOTXT_FINAL_FILTER=${TODOTXT_FINAL_FILTER:-cat}
 
 # Export all TODOTXT_* variables
-export ${!TODOTXT_@}
+for var in $(set); do
+    case $var in
+        TODOTXT_\*)
+        export $var
+        ;;
+    esac
+done
+
+
 
 # Default color map
 export NONE=''
@@ -604,8 +609,12 @@ ACTION=${1:-$TODOTXT_DEFAULT_ACTION}
 [ -f "$REPORT_FILE" ] || cp /dev/null "$REPORT_FILE"
 
 if [ $TODOTXT_PLAIN = 1 ]; then
-    for clr in ${!PRI_@}; do
-        export $clr=$NONE
+    for var in $(set); do
+        case $var in
+            PRI_\*)
+            export $var=$NONE
+            ;;
+        esac
     done
     PRI_X=$NONE
     DEFAULT=$NONE
@@ -617,7 +626,7 @@ _addto() {
     input="$2"
     cleaninput $input
 
-    if [[ $TODOTXT_DATE_ON_ADD = 1 ]]; then
+    if [ "$TODOTXT_DATE_ON_ADD" = 1 ]; then
         now=`date '+%Y-%m-%d'`
         input="$now $input"
     fi
@@ -635,7 +644,7 @@ _list() {
     local FILE="$1"
     ## If the file starts with a "/" use absolute path. Otherwise,
     ## try to find it in either $TODO_DIR or using a relative path
-    if [ "${1:0:1}" == / ]; then
+    if [ "$(echo "$1" | cut -b 1)" = / ]; then
         ## Absolute path
         src="$FILE"
     elif [ -f "$TODO_DIR/$FILE" ]; then
@@ -660,7 +669,7 @@ _list() {
     for search_term
     do
         ## See if the first character of $search_term is a dash
-        if [ "${search_term:0:1}" != '-' ]
+        if [ "$(echo $searchterm | cut -b 1)" != '-' ]
         then
             ## First character isn't a dash: hide lines that don't match
             ## this $search_term
@@ -672,7 +681,7 @@ _list() {
             #
             ## Remove the first character (-) before adding to our filter command
             filter_command="${filter_command:-} ${filter_command:+|} \
-                grep -v -i \"${search_term:1}\" "
+                grep -v -i \"$(echo ${searchterm} | cut -b 2-)\" "
         fi
     done
 
@@ -688,7 +697,7 @@ _list() {
 
     ## Number the file, then run the filter command,
     ## then sort and mangle output some more
-    if [[ $TODOTXT_DISABLE_FILTER = 1 ]]; then
+    if [ "$TODOTXT_DISABLE_FILTER" = 1 ]; then
         TODOTXT_FINAL_FILTER="cat"
     fi
     items=$(
@@ -750,7 +759,8 @@ _list() {
     fi
 }
 
-export -f _list die
+# XXX: the lack of this thing is bad?
+#export -f _list die
 
 # == HANDLE ACTION ==
 action=$( printf "%s\n" "$ACTION" | tr 'A-Z' 'a-z' )
@@ -759,7 +769,7 @@ action=$( printf "%s\n" "$ACTION" | tr 'A-Z' 'a-z' )
 ## using todo.sh builtins.
 ## Else, run a actions script with the name of the command if it exists
 ## or fallback to using a builtin
-if [ "$action" == command ]
+if [ "$action" = command ]
 then
     ## Get rid of "command" from arguments list
     shift
@@ -776,7 +786,7 @@ fi
 ## Only run if $action isn't found in .todo.actions.d
 case $action in
 "add" | "a")
-    if [[ -z "$2" && $TODOTXT_FORCE = 0 ]]; then
+    if [ -z "$2" -a "$TODOTXT_FORCE" = 0 ]; then
         echo -n "Add: "
         read input
     else
@@ -788,7 +798,7 @@ case $action in
     ;;
 
 "addm")
-    if [[ -z "$2" && $TODOTXT_FORCE = 0 ]]; then
+    if [ -z "$2" -a "$TODOTXT_FORCE" = 0 ]; then
         echo -n "Add: "
         read input
     else
@@ -829,10 +839,10 @@ case $action in
     shift; item=$1; shift
 
     [ -z "$item" ] && die "$errmsg"
-    [[ "$item" = +([0-9]) ]] || die "$errmsg"
+    echo "$item" | grep '[0-9]*' -q || die "$errmsg"
     todo=$(sed "$item!d" "$TODO_FILE")
     [ -z "$todo" ] && die "TODO: No task $item."
-    if [[ -z "$1" && $TODOTXT_FORCE = 0 ]]; then
+    if [ -z "$1" -a "$TODOTXT_FORCE" = 0 ]; then
         echo -n "Append: "
         read input
     else
@@ -862,7 +872,7 @@ case $action in
     errmsg="usage: $TODO_SH del ITEM# [TERM]"
     item=$2
     [ -z "$item" ] && die "$errmsg"
-    [[ "$item" = +([0-9]) ]] || die "$errmsg"
+    echo "$item" | grep '[0-9]*' -q || die "$errmsg"
     DELETEME=$(sed "$item!d" "$TODO_FILE")
     [ -z "$DELETEME" ] && die "TODO: No task $item."
 
@@ -917,7 +927,7 @@ case $action in
     # Split multiple depri's, if comma separated change to whitespace separated
     # Loop the 'depri' function for each item
     for item in `echo $* | tr ',' ' '`; do
-	[[ "$item" = +([0-9]) ]] || die "$errmsg"
+        echo "$item" | grep '[0-9]*' -q || die "$errmsg"
 	todo=$(sed "$item!d" "$TODO_FILE")
 	[ -z "$todo" ] && die "TODO: No task $item."
 
@@ -947,7 +957,7 @@ case $action in
     # Loop the 'do' function for each item
     for item in `echo $* | tr ',' ' '`; do 
         [ -z "$item" ] && die "$errmsg"
-        [[ "$item" = +([0-9]) ]] || die "$errmsg"
+        echo "$item" | grep '[0-9]*' -q || die "$errmsg"
 
         todo=$(sed "$item!d" "$TODO_FILE")
         [ -z "$todo" ] && die "TODO: No task $item."
@@ -1041,7 +1051,8 @@ case $action in
     [ -z "$4" ] && src="$TODO_FILE"
     [ -z "$dest" ] && die "$errmsg"
 
-    [[ "$item" = +([0-9]) ]] || die "$errmsg"
+    echo "$item" | grep '[0-9]*' -q || die "$errmsg"
+
 
     [ -f "$src" ] || die "TODO: Source file $src does not exist."
     [ -f "$dest" ] || die "TODO: Destination file $dest does not exist."
@@ -1086,8 +1097,8 @@ case $action in
 note: PRIORITY must be anywhere from A to Z."
 
     [ "$#" -ne 3 ] && die "$errmsg"
-    [[ "$item" = +([0-9]) ]] || die "$errmsg"
-    [[ "$newpri" = @([A-Z]) ]] || die "$errmsg"
+    echo "$item" | grep '[0-9]*' -q || die "$errmsg"
+    echo "$newpri" | grep '[A-Z]' -q || die "$errmsg"
 
     sed -e $item"s/^(.) //" -e $item"s/^/($newpri) /" "$TODO_FILE" > /dev/null 2>&1
 
