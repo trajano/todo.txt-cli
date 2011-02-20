@@ -280,10 +280,12 @@ cleaninput()
 archive()
 {
     #defragment blank lines
-    sed -i.bak -e '/./!d' "$TODO_FILE"
+    cp "$TODO_FILE" "$TODO_FILE.bak"
+    sed -e '/./!d' "$TODO_FILE.bak" > "$TODO_FILE"
     [ $TODOTXT_VERBOSE -gt 0 ] && grep "^x " "$TODO_FILE"
     grep "^x " "$TODO_FILE" >> "$DONE_FILE"
-    sed -i.bak '/^x /d' "$TODO_FILE"
+    cp "$TODO_FILE" "$TODO_FILE.bak"
+    sed '/^x /d' "$TODO_FILE.bak" > "$TODO_FILE"
     cp "$TODO_FILE" "$TMP_FILE"
     sed -n 'G; s/\n/&&/; /^\([ ~-]*\n\).*\n\1/d; s/\n//; h; P' "$TMP_FILE" > "$TODO_FILE"
     if [ $TODOTXT_VERBOSE -gt 0 ]; then
@@ -333,7 +335,8 @@ replaceOrPrepend()
   # Temporarily remove any existing priority and prepended date, perform the
   # change (replace/prepend) and re-insert the existing priority and prepended
   # date again.
-  sed -i.bak -e "$item s/^${priority}${prepdate}//" -e "$item s|^.*|${priority}${prepdate}${input}${backref}|" "$TODO_FILE"
+  cp "$TODO_FILE" "$TODO_FILE.bak"
+  sed -e "$item s/^${priority}${prepdate}//" -e "$item s|^.*|${priority}${prepdate}${input}${backref}|" "$TODO_FILE.bak" > "$TODO_FILE"
   if [ $TODOTXT_VERBOSE -gt 0 ]; then
     newtodo=$(sed "$item!d" "$TODO_FILE")
     case "$action" in
@@ -854,7 +857,8 @@ case $action in
     esac
     cleaninput $input
 
-    if sed -i.bak $item" s|^.*|&${appendspace}${input}|" "$TODO_FILE"; then
+    cp "$TODO_FILE" "$TODO_FILE.bak"
+    if sed $item" s|^.*|&${appendspace}${input}|" "$TODO_FILE.bak" > "$TODO_FILE"; then
         if [ $TODOTXT_VERBOSE -gt 0 ]; then
             newtodo=$(sed "$item!d" "$TODO_FILE")
             echo "$item $newtodo"
@@ -886,10 +890,12 @@ case $action in
         if [ "$ANSWER" = "y" ]; then
             if [ $TODOTXT_PRESERVE_LINE_NUMBERS = 0 ]; then
                 # delete line (changes line numbers)
-                sed -i.bak -e $item"s/^.*//" -e '/./!d' "$TODO_FILE"
+                cp "$TODO_FILE" "$TODO_FILE.bak"
+                sed -e $item"s/^.*//" -e '/./!d' "$TODO_FILE.bak" > "$TODO_FILE"
             else
                 # leave blank line behind (preserves line numbers)
-                sed -i.bak -e $item"s/^.*//" "$TODO_FILE"
+                cp "$TODO_FILE" "$TODO_FILE.bak"
+                sed -e $item"s/^.*//" "$TODO_FILE.bak" > "$TODO_FILE"
             fi
             if [ $TODOTXT_VERBOSE -gt 0 ]; then
                 echo "$item $DELETEME"
@@ -899,13 +905,14 @@ case $action in
             echo "TODO: No tasks were deleted."
         fi
     else
-        sed -i.bak \
+        cp "$TODO_FILE" "$TODO_FILE.bak"
+        sed \
             -e $item"s/^\((.) \)\{0,1\} *$3 */\1/g" \
             -e $item"s/ *$3 *\$//g" \
             -e $item"s/  *$3 */ /g" \
             -e $item"s/ *$3  */ /g" \
             -e $item"s/$3//g" \
-            "$TODO_FILE"
+            "$TODO_FILE.bak" > "$TODO_FILE.bak"
         newtodo=$(sed "$item!d" "$TODO_FILE")
         if [ "$DELETEME" = "$newtodo" ]; then
             [ $TODOTXT_VERBOSE -gt 0 ] && echo "$item $DELETEME"
@@ -935,7 +942,8 @@ case $action in
 
 	if [ "$?" -eq 0 ]; then
 	    #it's all good, continue
-	    sed -i.bak -e $item"s/^(.) //" "$TODO_FILE"
+	    cp "$TODO_FILE" "$TODO_FILE.bak"
+	    sed -e $item"s/^(.) //" "$TODO_FILE.bak" > "$TODO_FILE"
 	    if [ $TODOTXT_VERBOSE -gt 0 ]; then
 		NEWTODO=$(sed "$item!d" "$TODO_FILE")
 		echo "$item $NEWTODO"
@@ -966,8 +974,10 @@ case $action in
         if [ `echo $todo | grep -c "^x "` -eq 0 ] ; then
             now=`date '+%Y-%m-%d'`
             # remove priority once item is done
-            sed -i.bak $item"s/^(.) //" "$TODO_FILE"
-            sed -i.bak $item"s|^|x $now |" "$TODO_FILE"
+            cp "$TODO_FILE" "$TODO_FILE.bak"
+            sed $item"s/^(.) //" "$TODO_FILE.bak" > "$TODO_FILE"
+            cp "$TODO_FILE" "$TODO_FILE.bak"
+            sed  $item"s|^|x $now |" "$TODO_FILE.bak" > "$TODO_FILE"
             if [ $TODOTXT_VERBOSE -gt 0 ]; then
                 newtodo=$(sed "$item!d" "$TODO_FILE")
                 echo "$item $newtodo"
@@ -1068,10 +1078,12 @@ case $action in
     if [ "$ANSWER" = "y" ]; then
         if [ $TODOTXT_PRESERVE_LINE_NUMBERS = 0 ]; then
             # delete line (changes line numbers)
-            sed -i.bak -e $item"s/^.*//" -e '/./!d' "$src"
+            cp "$src" "$src.bak"
+            sed -e $item"s/^.*//" -e '/./!d' "$src.bak" > "$src"
         else
             # leave blank line behind (preserves line numbers)
-            sed -i.bak -e $item"s/^.*//" "$src"
+            cp "$src" "$src.bak"
+            sed -e $item"s/^.*//" "$src.bak" > "$src"
         fi
         echo "$MOVEME" >> "$dest"
 
@@ -1104,7 +1116,8 @@ note: PRIORITY must be anywhere from A to Z."
 
     if [ "$?" -eq 0 ]; then
         #it's all good, continue
-        sed -i.bak -e $item"s/^(.) //" -e $item"s/^/($newpri) /" "$TODO_FILE"
+        cp "$TODO_FILE" "$TODO_FILE.bak"
+        sed -e $item"s/^(.) //" -e $item"s/^/($newpri) /" "$TODO_FILE.bak" > "$TODO_FILE"
         if [ $TODOTXT_VERBOSE -gt 0 ]; then
             NEWTODO=$(sed "$item!d" "$TODO_FILE")
             echo "$item $NEWTODO"
@@ -1123,7 +1136,8 @@ note: PRIORITY must be anywhere from A to Z."
 "report" )
     #archive first
     sed '/^x /!d' "$TODO_FILE" >> "$DONE_FILE"
-    sed -i.bak '/^x /d' "$TODO_FILE"
+    cp "$TODO_FILE" "$TODO_FILE.bak"
+    sed '/^x /d' "$TODO_FILE.bak" > "$TODO_FILE"
 
     NUMLINES=$( sed -n '$ =' "$TODO_FILE" )
     if [ ${NUMLINES:-0} = "0" ]; then
