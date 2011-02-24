@@ -315,7 +315,7 @@ replaceOrPrepend()
   [ -z "$todo" ] && die "TODO: No task $item."
 
   if [ -z "$1" -a "$TODOTXT_FORCE" = 0 ]; then
-    echo -n "$querytext"
+    printf "%s" "$querytext"
     read input
   else
     input=$*
@@ -606,7 +606,7 @@ ACTION=${1:-$TODOTXT_DEFAULT_ACTION}
 [ -d "$TODO_DIR" ]  || die "Fatal Error: $TODO_DIR is not a directory"
 ( cd "$TODO_DIR" )  || die "Fatal Error: Unable to cd to $TODO_DIR"
 
-[ -w "$TMP_FILE"  ] || echo -n > "$TMP_FILE" || die "Fatal Error: Unable to write to $TMP_FILE"
+[ -w "$TMP_FILE"  ] || printf "" > "$TMP_FILE" || die "Fatal Error: Unable to write to $TMP_FILE"
 [ -f "$TODO_FILE" ] || cp /dev/null "$TODO_FILE"
 [ -f "$DONE_FILE" ] || cp /dev/null "$DONE_FILE"
 [ -f "$REPORT_FILE" ] || cp /dev/null "$REPORT_FILE"
@@ -709,12 +709,12 @@ _list() {
         | grep -v "^[ 0-9]\+ *$"
     )
     if [ "${filter_command}" ]; then
-        filtered_items=$(echo -n "$items" | eval ${filter_command})
+        filtered_items=$(printf "%s" "$items" | eval ${filter_command})
     else
         filtered_items=$items
     fi
     filtered_items=$(
-        echo -n "$filtered_items"                              \
+        printf "%s" "$filtered_items"                              \
         | sed '''
             s/^     /00000/;
             s/^    /0000/;
@@ -751,8 +751,8 @@ _list() {
     if [ $TODOTXT_VERBOSE -gt 0 ]; then
         BASE=$(basename "$FILE")
         PREFIX=$(echo ${BASE%%.[^.]*} | tr 'a-z' 'A-Z')
-        NUMTASKS=$( echo -n "$filtered_items" | sed -n '$ =' )
-        TOTALTASKS=$( echo -n "$items" | sed -n '$ =' )
+        NUMTASKS=$( printf "%s" "$filtered_items" | sed -n '$ =' )
+        TOTALTASKS=$( printf "%s" "$items" | sed -n '$ =' )
 
         echo "--"
         echo "${PREFIX}: ${NUMTASKS:-0} of ${TOTALTASKS:-0} tasks shown"
@@ -790,7 +790,7 @@ fi
 case $action in
 "add" | "a")
     if [ -z "$2" -a "$TODOTXT_FORCE" = 0 ]; then
-        echo -n "Add: "
+        printf "Add: "
         read input
     else
         [ -z "$2" ] && die "usage: $TODO_SH add \"TODO ITEM\""
@@ -802,7 +802,7 @@ case $action in
 
 "addm")
     if [ -z "$2" -a "$TODOTXT_FORCE" = 0 ]; then
-        echo -n "Add: "
+        printf "Add: "
         read input
     else
         [ -z "$2" ] && die "usage: $TODO_SH addm \"TODO ITEM\""
@@ -846,7 +846,7 @@ case $action in
     todo=$(sed "$item!d" "$TODO_FILE")
     [ -z "$todo" ] && die "TODO: No task $item."
     if [ -z "$1" -a "$TODOTXT_FORCE" = 0 ]; then
-        echo -n "Append: "
+        printf "Append: "
         read input
     else
         input=$*
